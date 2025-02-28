@@ -805,7 +805,7 @@ class _GameBaseScreenState extends State<GameBaseScreen> {
                               style: TextStyle(
                                   fontSize: 12, color: Colors.grey[600]),
                             ),
-                          ),
+                          )
                       ],
                     ),
 

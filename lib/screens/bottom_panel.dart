@@ -1,15 +1,34 @@
 import 'package:flutter/material.dart';
 
-class BottomPanel extends StatelessWidget {
+class BottomPanel extends StatefulWidget {
   final Function(String, double) onInvest; // Callback function
   final double cashBalance; // 💰 Added cash balance display
 
-  // Define our money green colors
-  final Color darkGreen = Color(0xFF1B4D3E); // Dark money green
-  final Color mediumGreen = Color(0xFF2E7D32); // Medium money green
-  final Color lightGreen = Color(0xFF4CAF50); // Light money green
+  const BottomPanel(
+      {Key? key, required this.onInvest, required this.cashBalance})
+      : super(key: key);
 
-  BottomPanel({required this.onInvest, required this.cashBalance});
+  @override
+  _BottomPanelState createState() => _BottomPanelState();
+}
+
+class _BottomPanelState extends State<BottomPanel>
+    with SingleTickerProviderStateMixin {
+  // Define our money green colors
+  final Color darkGreen = const Color(0xFF1B4D3E); // Dark money green
+  final Color mediumGreen = const Color(0xFF2E7D32); // Medium money green
+  final Color lightGreen = const Color(0xFF4CAF50); // Light money green
+
+  late TabController _tabController;
+  int _currentTabIndex = 0;
+  String? _selectedStock;
+  String _searchQuery = "";
+
+  @override
+  void initState() {
+    super.initState();
+    _tabController = TabController(length: 2, vsync: this);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -75,7 +94,7 @@ class BottomPanel extends StatelessWidget {
                         ),
                         SizedBox(width: 12),
                         Text(
-                          "\$${cashBalance.toStringAsFixed(2)}",
+                          "\$${widget.cashBalance.toStringAsFixed(2)}",
                           style: TextStyle(
                             fontSize: 24,
                             fontWeight: FontWeight.bold,
@@ -189,7 +208,7 @@ class BottomPanel extends StatelessWidget {
                 ),
                 SizedBox(width: 12),
                 ElevatedButton(
-                  onPressed: () => onInvest(stock["symbol"]!, 50),
+                  onPressed: () => widget.onInvest(stock["symbol"]!, 50),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: darkGreen,
                     shape: RoundedRectangleBorder(
