@@ -805,7 +805,7 @@ class _GameBaseScreenState extends State<GameBaseScreen> {
                               style: TextStyle(
                                   fontSize: 12, color: Colors.grey[600]),
                             ),
-                          )
+                          ),
                       ],
                     ),
 
@@ -2261,6 +2261,191 @@ class _GameBaseScreenState extends State<GameBaseScreen> {
   }
 
   int currentPage = 0;
+
+  // Add this method to your _GameBaseScreenState class to show a swipeable dialog
+  void _showDialog(int index) {
+    if (index < 0 || index >= grid.length || grid[index] == null) return;
+
+    final building = grid[index]!;
+    final stockType = building["type"] ?? "";
+    final level = building["level"] ?? 1;
+    final shares = building["shares"] ?? 0.0;
+
+    int currentPage = 0;
+
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return StatefulBuilder(
+          builder: (context, setState) {
+            return AlertDialog(
+              contentPadding: EdgeInsets.all(16),
+              content: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Container(
+                    height: 200, // Adjust height as needed
+                    width: double.maxFinite,
+                    child: PageView(
+                      onPageChanged: (index) {
+                        setState(() {
+                          currentPage = index;
+                        });
+                      },
+                      children: [
+                        // First page - Building info
+                        Column(
+                          children: [
+                            Row(
+                              children: [
+                                Image.asset(
+                                  building["image"] ?? "",
+                                  width: 40,
+                                  height: 40,
+                                  errorBuilder: (context, error, stackTrace) =>
+                                      Icon(Icons.business, size: 40),
+                                ),
+                                SizedBox(width: 10),
+                                Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      "$stockType Building",
+                                      style: TextStyle(
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: 16),
+                                    ),
+                                    Text("Level $level"),
+                                  ],
+                                ),
+                              ],
+                            ),
+                            SizedBox(height: 20),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Text("Shares"),
+                                Text("$shares"),
+                              ],
+                            ),
+                            SizedBox(height: 8),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Text("Income"),
+                                Text(
+                                    "\$${(shares * 0.5).toStringAsFixed(2)}/day"),
+                              ],
+                            ),
+                          ],
+                        ),
+
+                        // Second page - Company info
+                        Column(
+                          children: [
+                            Row(
+                              children: [
+                                Image.asset(
+                                  building["image"] ?? "",
+                                  width: 40,
+                                  height: 40,
+                                  errorBuilder: (context, error, stackTrace) =>
+                                      Icon(Icons.business, size: 40),
+                                ),
+                                SizedBox(width: 10),
+                                Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      "${building["symbol"] ?? stockType}",
+                                      style: TextStyle(
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: 16),
+                                    ),
+                                    Text(
+                                        "Market Cap: ${building["marketCap"] ?? "N/A"}"),
+                                  ],
+                                ),
+                              ],
+                            ),
+                            SizedBox(height: 20),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Text("Current Price"),
+                                Text("\$${building["price"] ?? "0.00"}"),
+                              ],
+                            ),
+                            SizedBox(height: 8),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Text("Change"),
+                                Text(
+                                  "${building["priceChange"] ?? "0.00"}%",
+                                  style: TextStyle(
+                                    color: (building["priceChange"] ?? 0) >= 0
+                                        ? Colors.green
+                                        : Colors.red,
+                                  ),
+                                )
+                              ],
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
+                  SizedBox(height: 20),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                      TextButton(
+                        onPressed: () {
+                          Navigator.of(context).pop();
+                        },
+                        child: Text("Close"),
+                      ),
+                      TextButton(
+                        onPressed: () {
+                          // Upgrade logic
+                          Navigator.of(context).pop();
+                        },
+                        child: Text("Upgrade"),
+                      ),
+                    ],
+                  ),
+                  SizedBox(height: 10),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Container(
+                        width: 8,
+                        height: 8,
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          color: currentPage == 0 ? Colors.blue : Colors.grey,
+                        ),
+                      ),
+                      SizedBox(width: 8),
+                      Container(
+                        width: 8,
+                        height: 8,
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          color: currentPage == 1 ? Colors.blue : Colors.grey,
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            );
+          },
+        );
+      },
+    );
+  }
 }
 
 // Helper method to handle swipe detection
